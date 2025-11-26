@@ -36,6 +36,7 @@ public class User {
     @JoinTable(name = "user_roles",joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name="role_id"))
     private  Set<org.example.backend.persitence.entity.Role> roles = new HashSet<>();
 
+
     @Column(name="phone",nullable = false,length = 100)
     private String phone;
     @Column(name="company",nullable = false,length = 100)

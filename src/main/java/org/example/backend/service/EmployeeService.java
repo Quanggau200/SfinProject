@@ -7,12 +7,15 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.example.backend.dto.EmployeeDto;
+import org.example.backend.dto.PayrollDto;
 import org.example.backend.dto.reponse.ApiResponse;
 import org.example.backend.dto.reponse.EmployeeReponse;
 import org.example.backend.dto.request.EmployeeRequest;
 import org.example.backend.persitence.entity.Employees;
+import org.example.backend.persitence.entity.Payroll;
 import org.example.backend.persitence.entity.User;
 import org.example.backend.persitence.repository.EmployeesRepository;
+import org.example.backend.persitence.repository.PayrollRepository;
 import org.example.backend.persitence.repository.UserRepository;
 import org.hibernate.annotations.NotFound;
 import org.modelmapper.ModelMapper;
@@ -24,41 +27,45 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@RequestMapping("sfinvietnam/employees/payroll")
 public class EmployeeService {
     private final EmployeesRepository employeesRepository;
     private final ModelMapper mapper = new ModelMapper();
+    private  PayrollRepository payrollRepository;
     public EmployeeService(EmployeesRepository employeesRepository) {
         this.employeesRepository = employeesRepository;
     }
+    @GetMapping("")
     public Page<EmployeeDto> getALlEmployees(Pageable pageable) {
         Page<Employees> employeesPage =employeesRepository.findAll(pageable);
         return employeesPage.map(employee -> EmployeeDto.builder()
-                .id(employee.getId())
-                .employeeId(employee.getEmployeeId()) // thêm
+                .employeeId(employee.getEmployeeId())
                 .fullName(employee.getFullName())
                 .email(employee.getEmail())
                 .phone(employee.getPhone())
                 .dataBirth(employee.getDataBirth())
-                .hireDate(employee.getHireDate()) // thêm
-                .position(employee.getPosition()) // thêm
-                .department(employee.getDepartment()) // thêm
+                .payrollList(employee.getPayroll())
+                .hireDate(employee.getHireDate())
+                .position(employee.getPosition())
+                .department(employee.getDepartment())
                 .role_company(employee.getRole_company())
                 .status(employee.getStatus())
                 .salary(employee.getSalary())
                 .tax(employee.getTax())
-                .bankInfor(employee.getBankInfor())
-                .profileImage(employee.getProfileImage()) // thêm
+                .bankInfor(employee.getBankinfor())
+                .profileImage(employee.getProfileImage())
                 .created_at(employee.getCreatedAt())
                 .updated_at(employee.getUpdatedAt())
                 .build());
@@ -67,7 +74,7 @@ public class EmployeeService {
     public EmployeeReponse createEmployees(EmployeeRequest request)
     {
         log.info("In method postEmployee");
-
+//        List<Payroll> payrollList=payrollRepository.findPayrollByEmployeeId(request.getEmployeeId());
         if(request==null)
         {
             throw new IllegalArgumentException("Employee request is null");
@@ -83,12 +90,10 @@ public class EmployeeService {
         {
             throw new IllegalArgumentException("Phone number is already in use");
         }
-
         Employees employees = new Employees();
-        employees.setId(request.getId());
+        employees.setEmployeeId(request.getEmployeeId());
         employees.setFullName(request.getFullName());
         employees.setEmail(request.getEmail());
-        employees.setEmployeeId(request.getEmployeeId());
         employees.setPhone(request.getPhone());
         employees.setDataBirth(request.getDataBirth());
         employees.setRole_company(request.getRole_company());
@@ -97,7 +102,7 @@ public class EmployeeService {
         employees.setStatus(request.getStatus());
         employees.setCreatedAt(request.getCreated_at());
         employees.setUpdatedAt(request.getUpdated_at());
-        employees.setBankInfor(request.getBankInfor());
+        employees.setBankinfor(request.getBankInfor());
         employees.setTax(request.getTax());
         employees.setSalary(request.getSalary());
 
@@ -106,16 +111,15 @@ public class EmployeeService {
 
         response.setFullName(employees.getFullName());
         response.setEmail(employees.getEmail());
-        response.setId(employees.getId());
-        response.setPhone(employees.getPhone());
         response.setEmployeeId(employees.getEmployeeId());
+        response.setPhone(employees.getPhone());
         response.setDataBirth(employees.getDataBirth());
         response.setRole_company(employees.getRole_company());
         response.setHireDate(employees.getHireDate());
         response.setStatus(employees.getStatus());
         response.setCreated_at(employees.getCreatedAt());
         response.setUpdated_at(employees.getUpdatedAt());
-        response.setBankInfor(employees.getBankInfor());
+        response.setBankInfor(employees.getBankinfor());
         response.setTax(employees.getTax());
         response.setSalary(employees.getSalary());
         return response;
@@ -148,13 +152,12 @@ public class EmployeeService {
     }
 
 
-    public void deleteById(UUID id) {
-        if(!employeesRepository.existsById(id))
+    public void deleteByEmployeeId(String employeeId) {
+        if(!employeesRepository.existsById(employeeId))
         {
             throw new IllegalArgumentException("Employee id not found");
         }
-        employeesRepository.deleteById(id);
-        employeesRepository.deleteById(id);
+        employeesRepository.deleteById(employeeId);
 
     }
 

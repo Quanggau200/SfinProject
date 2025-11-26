@@ -22,13 +22,16 @@ import java.util.UUID;
 @Table(name="employees")
 @Entity
 public class Employees {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private String employeeId;
 
-    @Column(name="employee_id",nullable = false,unique = true,length=100)
-    @NaturalId(mutable = false)
-    private String  employeeId;
+    @OneToMany(mappedBy = "employee",cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<Payroll> payroll =new ArrayList<>();
+
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 
@@ -39,7 +42,6 @@ public class Employees {
     private String email;
     @Column(length=100)
     private String status;
-
 
     @Column(columnDefinition = "TEXT")
     private String address;
@@ -60,7 +62,7 @@ public class Employees {
     private String role_company;
     @Column(length = 100)
     @NotBlank
-    private String bankInfor;
+    private String bankinfor;
     @Column(length = 50)
     private String department;
     @Column(length = 100,nullable = false)
@@ -82,10 +84,6 @@ public class Employees {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDate updatedAt = LocalDate.now();
-
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private List<Payroll> payroll= new ArrayList<>();
 
 
     @PreUpdate

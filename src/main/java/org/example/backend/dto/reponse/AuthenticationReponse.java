@@ -13,5 +13,6 @@ import java.security.PrivateKey;
 @Builder
 public class AuthenticationReponse {
     private String token;
+    private String refreshToken;
     private boolean authenticated;
 }

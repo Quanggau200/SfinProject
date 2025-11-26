@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.backend.persitence.entity.Employees;
+import org.example.backend.persitence.entity.Payroll;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
@@ -33,13 +34,12 @@ public class EmployeeDto {
     private String phone;
     @NotBlank
     private String employeeId;
-
+    List<Payroll> payrollList;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @DateTimeFormat
     private LocalDate dataBirth;
     @NotBlank
     private String role_company;
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @DateTimeFormat
     @NotNull(message = "Hire date is required")
@@ -61,6 +61,7 @@ public class EmployeeDto {
     @Size(max=100,message = "Bank Infor must be less than 100 characters")
     private String bankInfor;
 
+    private String token;
 
     @Size(max=100,message = "Tax must be less than 50 characters")
     private String tax;

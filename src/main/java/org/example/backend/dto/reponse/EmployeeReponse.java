@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -15,7 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeReponse {
-    private UUID id;
     private String fullName;
     private String email;
     private String phone;
@@ -33,6 +33,8 @@ public class EmployeeReponse {
     private String tax;
     private String  status;
     @NotBlank
+    private List<String> payroll;
+
     private Integer salary;
     private String bankInfor;
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")

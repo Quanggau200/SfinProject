@@ -56,10 +56,10 @@ public class EmployeeController {
         return new ApiResponse<>(200,"Success","Create Successfully",employeeService.createEmployees(request));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{employeeId}")
 //    @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<ResponseEntity<Void>> deleteEmployee(@PathVariable UUID id) {
-        employeeService.deleteById(id);
+    public ApiResponse<ResponseEntity<Void>> deleteEmployee(@PathVariable String employeeId) {
+        employeeService.deleteByEmployeeId(employeeId);
 
         return new ApiResponse<>(200, "Success", "Delete Successfully", ResponseEntity.noContent().build());
     }

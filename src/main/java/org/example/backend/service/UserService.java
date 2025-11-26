@@ -6,12 +6,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
+import org.example.backend.configuration.JwtService;
+import org.example.backend.dto.reponse.AuthenticationReponse;
 import org.example.backend.dto.reponse.UserRegisterReponse;
 import org.example.backend.dto.request.UserRegisterRequest;
 import org.example.backend.persitence.entity.Role;
 import org.example.backend.persitence.repository.UserRepository;
 
 import org.example.backend.persitence.repository.RoleRepository;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +24,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.example.backend.persitence.entity.User;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.List;
 import java.util.Set;
@@ -34,11 +40,12 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
 
     private final RoleRepository roleRepository;
-
+    private final JwtService jwtService;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(15);
+    private final AuthenticationService authenticationService;
 
     @Transactional
-    public UserRegisterReponse register(UserRegisterRequest request)  {
+       public AuthenticationReponse register(UserRegisterRequest request)  {
         log.info("In method register user");
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new IllegalArgumentException("Username is already in use");
@@ -65,6 +72,8 @@ public class UserService implements UserDetailsService {
         user.setRoles(roleSet);
         userRepository.save(user);
 
+        String token=jwtService.generateToken(user);
+
         UserRegisterReponse userRegisterReponse=new UserRegisterReponse(request);
         userRegisterReponse.setId(request.getId());
         userRegisterReponse.setUsername(request.getUsername());
@@ -75,10 +84,11 @@ public class UserService implements UserDetailsService {
         userRegisterReponse.setCompany(request.getCompany());
         userRegisterReponse.setCreatedAt(request.getCreatedAt());
         userRegisterReponse.setUpdateAt(request.getCreatedAt());
+
         log.info("User registered and save successfully", userRegisterReponse);
-        return userRegisterReponse;
+        return AuthenticationReponse.builder().token(token).authenticated(true).build();
     }
-   
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
@@ -97,9 +107,4 @@ public class UserService implements UserDetailsService {
                 disabled(!user.isActive())
                 .build();
     }
-    public UserRepository forgetPassword()
-    {
-
-    }
-
 }

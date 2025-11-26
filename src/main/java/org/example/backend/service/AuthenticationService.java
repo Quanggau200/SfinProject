@@ -15,6 +15,8 @@ import org.example.backend.dto.request.AuthenticationRequest;
 import org.example.backend.persitence.entity.User;
 import org.example.backend.persitence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -34,11 +36,23 @@ public class AuthenticationService {
     {
         var userLogin = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found!"));
+
         boolean authenticated=passwordEncoder.matches(request.getPassword(),userLogin.getPasswordHash());
+        if(!authenticated)
+        {
+            throw new RuntimeException("Invalid  password!");
+        }
         var token= jwtService.generateToken(userLogin);
-        var refreshToken=jwtService.generateRefreshToken(userLogin);
-        return  AuthenticationReponse.builder().token(token).authenticated(true).build();
+        var refreshToken= jwtService.generateRefreshToken(userLogin);
+        return AuthenticationReponse.builder()
+                .token(token)
+                .refreshToken(refreshToken)
+                .authenticated(true)
+                .build();
     }
+
+
+
 
 
 
