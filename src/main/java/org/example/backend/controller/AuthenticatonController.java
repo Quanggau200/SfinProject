@@ -2,6 +2,7 @@ package org.example.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.example.backend.configuration.JwtService;
 import org.example.backend.dto.reponse.ApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -12,10 +13,16 @@ import org.example.backend.dto.reponse.UserRegisterReponse;
 import org.example.backend.dto.request.AuthenticationRequest;
 import org.example.backend.dto.request.UserRegisterRequest;
 import org.example.backend.persitence.entity.User;
+import org.example.backend.persitence.repository.UserRepository;
 import org.example.backend.service.AuthenticationService;
 import org.example.backend.service.UserService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Locale;
 
 @Slf4j
 @RestController
@@ -24,12 +31,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/sfinvietnam/auth")
 @ResponseStatus(HttpStatus.CREATED)
 public class AuthenticatonController {
-    private UserService userService;
     private AuthenticationService authenticationService;
+    private UserRepository userRepository;
+    private final JwtService jwtService;
+    private final UserService userService;
+
     @PostMapping("/register-new-user")
-    public ApiResponse<UserRegisterReponse>registerAcc(@Valid @RequestBody UserRegisterRequest request)
+    public ApiResponse<AuthenticationReponse>registerAcc(@Valid @RequestBody UserRegisterRequest request)
     {
-        UserRegisterReponse reponse=userService.register(request);
+        AuthenticationReponse reponse=userService.register(request);
         return new ApiResponse<>(
                 200,
                 "success",
@@ -37,18 +47,37 @@ public class AuthenticatonController {
                 reponse
         );
     }
+
     @PostMapping("/login")
     @Operation(summary = "Authenicaton admin",description = "Authentication user with username and password")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",description = "Login successful")
-    public ApiResponse<AuthenticationReponse>authenticate(
-            @Valid @RequestBody AuthenticationRequest request)
+
+    public ResponseEntity<ApiResponse<AuthenticationReponse>> authenticate(@Valid @RequestBody AuthenticationRequest request)
     {
-        return new ApiResponse<>(
-                200,
-            "Success",
-        "Login successful",
-        authenticationService.authenticated(request)
-        );
+    AuthenticationReponse response=authenticationService.authenticated(request);
+//    ResponseCookie cookie=ResponseCookie.from("refresh_token",response.getRefreshToken())
+//            .httpOnly(true)
+//            .secure(true)
+//            .sameSite("none")
+//            .path("/")
+//            .maxAge(7*24*60*60)
+//            .build();
+    ResponseCookie accesstooken=ResponseCookie.from("access_token",response.getToken())
+            .httpOnly(true)
+            .sameSite("none")
+            .secure(true)
+            .path("/")
+            .maxAge(900)
+            .build();
+        return ResponseEntity.ok()
+//                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, accesstooken.toString())
+                .body(new ApiResponse<>(
+                        200,
+                        "Success",
+                        "Login successful",
+                        response
+                ));
     }
 
 }

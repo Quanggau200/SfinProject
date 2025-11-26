@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.backend.persitence.entity.Payroll;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ import java.util.UUID;
 public class Payrollreponse {
     private UUID id;
     @NotBlank
-    private String employee_id;
+    private String employeeId;
     @NotBlank
     private String employee_name;
     @NotBlank
@@ -29,4 +30,7 @@ public class Payrollreponse {
     private BigDecimal bonus;
     @NotBlank
     private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 }

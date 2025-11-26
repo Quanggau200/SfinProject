@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -29,26 +30,18 @@ public class UserRegisterRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be in valid format !!!")
     private String email;
-
-    private Boolean active;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDateTime updateAt;
-
     @NotBlank(message = "Phone is required")
     private String phone;
-    private Set<String> roles;
-
+    @NotBlank(message = "Role is required")
+    private Set<String> roles=new HashSet<>();
     @NotBlank(message="Company is required")
     private String company;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDateTime createdAt;
-
-
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDateTime createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private LocalDateTime updateAt;
 
-    @NotBlank(message = "Confirm password is required")
-    private String confirmPassword;
 }

@@ -38,7 +38,8 @@ public class UserRegisterReponse {
     private String phone;
     @NotBlank(message="Company is required")
     private String company;
-
+    @NotBlank
+    private String token;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDateTime updateAt;
 

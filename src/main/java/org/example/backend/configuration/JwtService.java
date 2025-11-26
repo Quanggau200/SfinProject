@@ -8,6 +8,7 @@ import org.example.backend.persitence.entity.User;
 import org.example.backend.persitence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -26,15 +27,15 @@ public class JwtService
         byte[] keyBytes = signerKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-    public String generateToken(User user) {
+    public String generateRefreshToken(User user) {
         return Jwts.builder().setSubject(user.getUsername())
                 .setIssuedAt(new Date())
-                .claim("role", user.getRoles())
+                .claim("role",user.getRoles())
                 .setExpiration(new Date())
                 .signWith(getSignerKey())
                 .compact();
     }
-    public String generateRefreshToken(User user) {
+    public String generateToken(User user) {
         return Jwts.builder().setSubject(user.getUsername()).
                 setIssuedAt(new Date())
                 .signWith(getSignerKey()).

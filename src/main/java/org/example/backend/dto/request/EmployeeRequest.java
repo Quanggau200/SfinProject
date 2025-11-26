@@ -23,12 +23,12 @@ import java.util.UUID;
 @Getter
 @Setter
 public class EmployeeRequest {
-    private UUID id;
+    private String employeeId;
     private String fullName;
     private String email;
     private String phone;
     @NotBlank
-    private String employeeId;
+
     private String role_company;
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
 

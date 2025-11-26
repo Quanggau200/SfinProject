@@ -1,22 +1,21 @@
 package org.example.backend.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
-@Setter
+@Builder
+@Data
 public class PayrollRequest {
     private UUID id;
     @NotBlank
-    private String employee_id;
+    private String employeeId;
     @NotBlank
     private String fullName;
     @NotBlank
@@ -27,4 +26,5 @@ public class PayrollRequest {
     private BigDecimal bonus;
     @NotBlank
     private String status;
+    private LocalDateTime createdAt;
 }
