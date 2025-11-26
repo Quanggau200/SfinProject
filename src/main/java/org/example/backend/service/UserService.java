@@ -97,9 +97,9 @@ public class UserService implements UserDetailsService {
                 disabled(!user.isActive())
                 .build();
     }
-    public UserRepository forgetPassword()
-    {
-
-    }
+//    public UserRepository forgetPassword()
+//    {
+//
+//    }
 
 }

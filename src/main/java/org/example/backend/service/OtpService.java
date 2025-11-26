@@ -16,16 +16,16 @@ import java.time.Duration;
 @Transactional
 @RequiredArgsConstructor
 public class OtpService {
-    private StringRedisTemplate redisTemplate;
-    private static final long OTP_TTL_MINUTES = 2;
-    private static final String OTP_PREFIX = "OTP:FORGOT_PASS:";
-
-   Public String generateAndSaveOtp(String email)
-    {
-        String otp=generateRandomOtp();
-        String key=OTP_PREFIX+email;
-        redisTemplate.opsForValue().set(key,otp, Duration.ofMinutes(OTP_TTL_MINUTES))
-        return;
-    }
+//    private StringRedisTemplate redisTemplate;
+//    private static final long OTP_TTL_MINUTES = 2;
+//    private static final String OTP_PREFIX = "OTP:FORGOT_PASS:";
+//
+//   Public String generateAndSaveOtp(String email)
+//    {
+//        String otp=generateRandomOtp();
+//        String key=OTP_PREFIX+email;
+//        redisTemplate.opsForValue().set(key,otp, Duration.ofMinutes(OTP_TTL_MINUTES))
+//        return;
+//    }
 
 }
