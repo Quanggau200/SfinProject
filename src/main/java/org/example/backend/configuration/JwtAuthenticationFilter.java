@@ -78,30 +78,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
-    private void handlRefreshToken(HttpServletRequest request,HttpServletResponse response
-    ){
-        try{
-            String refeshToken=getCookieValue(request,"refreshToken");
-            if(refeshToken==null) return;
-            String username=jwtService.extractUsername(refeshToken);
-            User user=userRepository.findByUsername(username).orElse(null);
-            if(jwtService.isTokenValid(refeshToken,user))
-            {
-                String newAccessToken= jwtService.generateToken(user);
-                ResponseCookie accessCookie=ResponseCookie.from("access_token",newAccessToken)
-                        .secure(true)
-                        .httpOnly(true)
-                        .sameSite("none")
-                        .path("/")
-                        .maxAge(900)
-                        .build();
-                response.addHeader(HttpHeaders.SET_COOKIE,accessCookie.toString());
-            }
-        }
-        catch(Exception ex)
-        {
-            System.err.println("Lỗi JWT Filter: " + ex.getMessage());
-        }
-    }
+//    private void handlRefreshToken(HttpServletRequest request,HttpServletResponse response
+//    ){
+//        try{
+//            String refeshToken=getCookieValue(request,"refreshToken");
+//            if(refeshToken==null) return;
+//            String username=jwtService.extractUsername(refeshToken);
+//            User user=userRepository.findByUsername(username).orElse(null);
+//            if(jwtService.isTokenValid(refeshToken,user))
+//            {
+//                String newAccessToken= jwtService.generateToken(user);
+//                ResponseCookie accessCookie=ResponseCookie.from("access_token",newAccessToken)
+//                        .secure(true)
+//                        .httpOnly(true)
+//                        .sameSite("none")
+//                        .path("/")
+//                        .maxAge(900)
+//                        .build();
+//                response.addHeader(HttpHeaders.SET_COOKIE,accessCookie.toString());
+//            }
+//        }
+//        catch(Exception ex)
+//        {
+//            System.err.println("Lỗi JWT Filter: " + ex.getMessage());
+//        }
+//    }
 
 }
