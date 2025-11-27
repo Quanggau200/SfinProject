@@ -24,5 +24,5 @@ public class AuthenticationRequest {
     private String password;
     @NotBlank (message = "Role is required")
     private String role;
-
+    private String token;
 }

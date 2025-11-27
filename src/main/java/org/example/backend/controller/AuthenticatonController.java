@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Locale;
 
@@ -47,6 +48,34 @@ public class AuthenticatonController {
                 reponse
         );
     }
+    // get user
+    @GetMapping("/get-user")
+    public ApiResponse<UserRegisterReponse> getProfileUser(
+            @CookieValue(name="access_token",required = false) String token )
+    {
+        if (token == null || token.isEmpty())
+        {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Token is empty");
+        }
+        String username= jwtService.extractUsername(token);
+        User userFind=userRepository.findByUsername(username)
+                .orElseThrow(()->new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        UserRegisterReponse userRegisterReponse=new UserRegisterReponse();
+        userRegisterReponse.setId(userFind.getId());
+        userRegisterReponse.setUsername(userFind.getUsername());
+        userRegisterReponse.setEmail(userFind.getEmail());
+        userRegisterReponse.setCompany(userFind.getCompany());
+        userRegisterReponse.setActive(userFind.isActive());
+        userRegisterReponse.setPhone(userFind.getPhone());
+        userRegisterReponse.setCreatedAt(userFind.getCreatedAt());
+        userRegisterReponse.setUpdateAt(userFind.getUpdatedAt());
+        return new ApiResponse<>(
+                200,
+                "success",
+                "Get user Successfully",
+                userRegisterReponse
+        );
+    }
 
     @PostMapping("/login")
     @Operation(summary = "Authenicaton admin",description = "Authentication user with username and password")
@@ -67,7 +96,7 @@ public class AuthenticatonController {
             .sameSite("none")
             .secure(true)
             .path("/")
-            .maxAge(900)
+            .maxAge(24*60*60)
             .build();
         return ResponseEntity.ok()
 //                .header(HttpHeaders.SET_COOKIE, cookie.toString())

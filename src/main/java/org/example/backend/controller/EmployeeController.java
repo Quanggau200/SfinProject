@@ -47,7 +47,6 @@ public class EmployeeController {
     }
 
     @PostMapping("")
-
     @Operation(summary = "")
     @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",description = "Create Employee Successfully")
     public ApiResponse<EmployeeReponse> createEmployee(@RequestBody EmployeeRequest request)

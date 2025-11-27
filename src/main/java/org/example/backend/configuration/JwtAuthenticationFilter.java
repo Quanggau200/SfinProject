@@ -41,28 +41,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        try {
-            String authHeader = request.getHeader("Authorization");
-            String token = authHeader.substring(7);
-            if(authHeader.startsWith("Bearer ")||authHeader!=null) {
-                String username = jwtService.extractUsername(token);
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = userService.loadUserByUsername(username);
-                    if (userDetails != null) {
-                        UsernamePasswordAuthenticationToken authToken
-                                = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        authToken.setDetails(new WebAuthenticationDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                    }
+        String token=getCookieValue(request,"access_token");
+        try{
+            String username=jwtService.extractUsername(token);
+            if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){
+                UserDetails userDetails = userService.loadUserByUsername(username);
+                if(jwtService.isTokenValid(token,userDetails )){
+                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+                            = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+                    usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
                 }
             }
-
-        }
-        catch (Exception e) {
-            System.err.println("Lỗi JWT Filter: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Jwt Authentication Error" + e.getMessage());
         }
         chain.doFilter(request,response);
     }
+
+    // hàm lấy cookie
     private String getCookieValue(HttpServletRequest request, String cookieName) {
         if(request.getCookies() == null){
             return null;
@@ -78,16 +75,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
 //    private void handlRefreshToken(HttpServletRequest request,HttpServletResponse response
 //    ){
 //        try{
 //            String refeshToken=getCookieValue(request,"refreshToken");
 //            if(refeshToken==null) return;
 //            String username=jwtService.extractUsername(refeshToken);
-//            User user=userRepository.findByUsername(username).orElse(null);
-//            if(jwtService.isTokenValid(refeshToken,user))
+//            UserDetails userDetails = userService.loadUserByUsername(username);
+//            if(jwtService.isTokenValid(refeshToken,userDetails))
 //            {
-//                String newAccessToken= jwtService.generateToken(user);
+//                String newAccessToken= jwtService.generateToken(userDetails);
 //                ResponseCookie accessCookie=ResponseCookie.from("access_token",newAccessToken)
 //                        .secure(true)
 //                        .httpOnly(true)
