@@ -1,6 +1,7 @@
 package org.example.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,23 +37,23 @@ public class EmployeeController {
     private final ModelMapper mapper;
     private final EmployeesRepository employeesRepository;
     @GetMapping("")
-    public ApiResponse<Page<EmployeeDto>> getALl(
-
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size)
-    {
+    public ResponseEntity<ApiResponse<Page<EmployeeDto>>> getAllEmployee(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<EmployeeDto> result=  employeeService.getALlEmployees(pageable);
-        return new ApiResponse<>( 200, "success","get employees successfully", result);
+        Page<EmployeeDto> result=employeeService.getALlEmployees(pageable);
+        return ResponseEntity.ok(new ApiResponse<>(200,"success","get employees successfully",result));
     }
 
     @PostMapping("")
-    @Operation(summary = "")
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200",description = "Create Employee Successfully")
-    public ApiResponse<EmployeeReponse> createEmployee(@RequestBody EmployeeRequest request)
-    {
-        
-        return new ApiResponse<>(200,"Success","Create Successfully",employeeService.createEmployees(request));
+    @Operation(summary = "Create new employee")
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Create Employee Successfully")
+    public ResponseEntity<ApiResponse<EmployeeReponse>> createEmployee(@Valid @RequestBody EmployeeRequest employeeRequest) {
+        return ResponseEntity.ok(
+                new ApiResponse<>(200, "success", "create employee successfully", employeeService.createEmployees(employeeRequest))
+        );
+    }
+    @GetMapping("/{employeeId}")
+    public ResponseEntity<ApiResponse<EmployeeDto>> getEmployeeById(@PathVariable("employeeId") String employeeId) {
+        return ResponseEntity.ok(new ApiResponse<>(200,"success","get detail employee successfully",employeeService.getEmployeeDetail(employeeId)));
     }
 
     @DeleteMapping("/{employeeId}")
@@ -62,14 +63,11 @@ public class EmployeeController {
 
         return new ApiResponse<>(200, "Success", "Delete Successfully", ResponseEntity.noContent().build());
     }
-
     @PatchMapping("/{employeeId}")
-    public ApiResponse<EmployeeDto> editEmployee(
-            @PathVariable String employeeId,
-            @RequestBody Map<String, Object> request) {
-
-        Employees updated = employeeService.updateEmployee(employeeId, request);
-        EmployeeDto dto = mapper.map(updated, EmployeeDto.class);
-        return new ApiResponse<>(200, "Success", "Cập nhật thành công", dto);
+    public ResponseEntity<ApiResponse<EmployeeDto>> editEmployee(@PathVariable String employeeId,@RequestBody Map<String,Object> request)
+    {
+        Employees update=employeeService.updateEmployee(employeeId,request);
+        EmployeeDto result=mapper.map(update,EmployeeDto.class);
+        return ResponseEntity.ok(new ApiResponse<>(200,"Success","Update Successfully",result));
     }
 }

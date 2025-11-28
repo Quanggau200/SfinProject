@@ -38,15 +38,25 @@ public class AuthenticatonController {
     private final UserService userService;
 
     @PostMapping("/register-new-user")
-    public ApiResponse<AuthenticationReponse>registerAcc(@Valid @RequestBody UserRegisterRequest request)
+    public ResponseEntity<ApiResponse<AuthenticationReponse>>register
+            (@Valid @RequestBody UserRegisterRequest request)
     {
-        AuthenticationReponse reponse=userService.register(request);
-        return new ApiResponse<>(
-                200,
-                "success",
-                "Register Successfully",
-                reponse
-        );
+        AuthenticationReponse reponseRegister =userService.register(request);
+        ResponseCookie cookie= ResponseCookie.from("access_token",reponseRegister.getToken())
+                .httpOnly(true)
+                .sameSite("none")
+                .maxAge(1000 * 60 * 60 * 24 * 7)
+                .secure(true)
+                .path("/")
+                .build();
+        return ResponseEntity.ok().
+                header(HttpHeaders.SET_COOKIE,cookie.toString())
+                .body(
+                        new ApiResponse<>(
+                        200,
+                        "success",
+                        "Register Successfully",
+                        reponseRegister));
     }
     // get user
     @GetMapping("/get-user")
@@ -84,22 +94,14 @@ public class AuthenticatonController {
     public ResponseEntity<ApiResponse<AuthenticationReponse>> authenticate(@Valid @RequestBody AuthenticationRequest request)
     {
     AuthenticationReponse response=authenticationService.authenticated(request);
-//    ResponseCookie cookie=ResponseCookie.from("refresh_token",response.getRefreshToken())
-//            .httpOnly(true)
-//            .secure(true)
-//            .sameSite("none")
-//            .path("/")
-//            .maxAge(7*24*60*60)
-//            .build();
     ResponseCookie accesstooken=ResponseCookie.from("access_token",response.getToken())
             .httpOnly(true)
             .sameSite("none")
             .secure(true)
             .path("/")
-            .maxAge(24*60*60)
+            .maxAge(1000 * 60 * 60 * 24 * 7)
             .build();
         return ResponseEntity.ok()
-//                .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .header(HttpHeaders.SET_COOKIE, accesstooken.toString())
                 .body(new ApiResponse<>(
                         200,

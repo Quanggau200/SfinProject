@@ -3,9 +3,11 @@ package org.example.backend.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.example.backend.Mapper.EmployeeMapper;
 import org.example.backend.dto.EmployeeDto;
 import org.example.backend.dto.PayrollDto;
 import org.example.backend.dto.reponse.ApiResponse;
@@ -39,36 +41,15 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@RequestMapping("sfinvietnam/employees/payroll")
-public class EmployeeService {
+@RequiredArgsConstructor
+public class EmployeeService  {
     private final EmployeesRepository employeesRepository;
-    private final ModelMapper mapper = new ModelMapper();
-    private  PayrollRepository payrollRepository;
-    public EmployeeService(EmployeesRepository employeesRepository) {
-        this.employeesRepository = employeesRepository;
-    }
+   private final EmployeeMapper employeeMapper;
+
     @GetMapping("")
     public Page<EmployeeDto> getALlEmployees(Pageable pageable) {
-        Page<Employees> employeesPage =employeesRepository.findAll(pageable);
-        return employeesPage.map(employee -> EmployeeDto.builder()
-                .employeeId(employee.getEmployeeId())
-                .fullName(employee.getFullName())
-                .email(employee.getEmail())
-                .phone(employee.getPhone())
-                .dataBirth(employee.getDataBirth())
-                .payrollList(employee.getPayroll())
-                .hireDate(employee.getHireDate())
-                .position(employee.getPosition())
-                .department(employee.getDepartment())
-                .role_company(employee.getRole_company())
-                .status(employee.getStatus())
-                .salary(employee.getSalary())
-                .tax(employee.getTax())
-                .bankInfor(employee.getBankinfor())
-                .profileImage(employee.getProfileImage())
-                .created_at(employee.getCreatedAt())
-                .updated_at(employee.getUpdatedAt())
-                .build());
+      return  employeesRepository.findAll(pageable)
+              .map(employeeMapper::todo);
 
     }
     public EmployeeReponse createEmployees(EmployeeRequest request)
@@ -149,6 +130,12 @@ public class EmployeeService {
         entity.setUpdatedAt(LocalDate.now());
         return employeesRepository.save(entity);
 
+    }
+    public EmployeeDto getEmployeeDetail(String employeeid)
+    {
+        Employees employees=employeesRepository.findByEmployeeId(employeeid).
+                orElseThrow(()->new EntityNotFoundException("Employee not found: " + employeeid));
+        return employeeMapper.todo(employees);
     }
 
 

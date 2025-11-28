@@ -22,8 +22,6 @@ import java.util.UUID;
 @Table(name="employees")
 @Entity
 public class Employees {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String employeeId;

@@ -42,7 +42,7 @@ public class JwtService
     // hàm gen token
     public String generateToken(User user) {
         Date now=new Date();
-        Date expiration=new Date(now.getTime() + 1000 * 60 * 60);
+        Date expiration=new Date(now.getTime() + 1000 * 60 * 60 * 24 * 7);
         return Jwts.builder().setSubject(user.getUsername()).
                 setIssuedAt(new Date())
                 .claim("role",user.getRoles())

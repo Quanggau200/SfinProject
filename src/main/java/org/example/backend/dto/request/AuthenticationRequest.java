@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 @Setter
 public class AuthenticationRequest {
     @Id
-    @NotBlank(message = "Username is required")
     @Email(message = "Email must be valid format ! !!")
     private String email;
     @NotBlank(message = "Full name is required")
@@ -24,5 +23,4 @@ public class AuthenticationRequest {
     private String password;
     @NotBlank (message = "Role is required")
     private String role;
-    private String token;
 }

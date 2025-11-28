@@ -23,12 +23,18 @@ import java.util.UUID;
 @Getter
 @Setter
 public class EmployeeRequest {
-    private String employeeId;
-    private String fullName;
-    private String email;
-    private String phone;
     @NotBlank
+    private String employeeId;
+    @NotBlank
+    private String fullName;
+    @NotBlank
+    private String address;
+    @NotBlank
+    private String email;
+    @NotBlank
+    private String phone;
 
+    @NotBlank
     private String role_company;
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
 
@@ -42,8 +48,8 @@ public class EmployeeRequest {
     private String  status;
     @NotBlank
     private Integer salary;
+    @NotBlank
     private String bankInfor;
-
     @CreationTimestamp
     @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "dd-MM-yyyy")
     private LocalDate created_at;

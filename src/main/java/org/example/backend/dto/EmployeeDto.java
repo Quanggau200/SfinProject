@@ -22,8 +22,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class EmployeeDto {
-    private UUID id;
-
     @NotBlank(message = "Full name is required")
     @Size(max = 100, message = "Full name must be less than 100 characters")
     private String fullName;
@@ -34,7 +32,7 @@ public class EmployeeDto {
     private String phone;
     @NotBlank
     private String employeeId;
-    List<Payroll> payrollList;
+    private List<PayrollDto> payroll;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     @DateTimeFormat
     private LocalDate dataBirth;
@@ -60,8 +58,6 @@ public class EmployeeDto {
 
     @Size(max=100,message = "Bank Infor must be less than 100 characters")
     private String bankInfor;
-
-    private String token;
 
     @Size(max=100,message = "Tax must be less than 50 characters")
     private String tax;

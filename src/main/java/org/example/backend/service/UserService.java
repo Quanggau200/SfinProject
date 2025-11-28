@@ -7,9 +7,11 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import org.example.backend.configuration.JwtService;
+import org.example.backend.dto.EmployeeDto;
 import org.example.backend.dto.reponse.AuthenticationReponse;
 import org.example.backend.dto.reponse.UserRegisterReponse;
 import org.example.backend.dto.request.UserRegisterRequest;
+import org.example.backend.persitence.entity.Employees;
 import org.example.backend.persitence.entity.Role;
 import org.example.backend.persitence.repository.UserRepository;
 
@@ -88,6 +90,7 @@ public class UserService implements UserDetailsService {
         log.info("User registered and save successfully", userRegisterReponse);
         return AuthenticationReponse.builder().token(token).authenticated(true).build();
     }
+
 
 
     @Override

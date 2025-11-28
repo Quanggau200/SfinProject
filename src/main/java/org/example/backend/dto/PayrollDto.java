@@ -17,7 +17,7 @@ public class PayrollDto {
     private UUID id;
     private String employeeName;
     private String employeeId;
-    private BigDecimal basic_salary; //
+    private BigDecimal basic_salary;
     private BigDecimal bonus;
 
 }
